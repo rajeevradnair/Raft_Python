@@ -936,17 +936,12 @@ class RaftApplication:
 
 
 class RaftRunTime:
+
     BROADCAST_TIMEOUT = 0.5
     HEARTBEAT_TIMER = 1
     ELECTION_CHECK_FREQUENCY = 5
     LEADER_CHECKIN_MAX_WAIT = 30
 
-    '''
-    To avoid HEARTBEAT_TICKS flooding the 
-    '''
-    def controlled_put(self, msg, queue, max_count):
-
-        pass
 
     def __init__(self, application=None):
         self.incoming_queue = Queue()
@@ -984,9 +979,6 @@ class RaftRunTime:
         request_msg = ClientAppendRequest(command=instructions.NO_OP_COMMAND, uuid=runtime.gen_uuid(), source=server.id,
                                       destination=server.id, ref_msg_uuid=None)
 
-        # Ideally, I would have wanted the NO_OP to get processed in a timely fashion, but it is getting drowned
-        # in the tsunami of HEARTBEAT_TICKS. Hence, the queue is being short-circuited.
-        # handle_leader_append_entries(self, server, request_msg)
         runtime.incoming_queue.put_nowait(request_msg)
 
     def role_change_follower_to_candidate(self, server):
